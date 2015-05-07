@@ -1,0 +1,5 @@
+<root>
+    <item name='com.google.android.gms.maps.model.LatLng'>
+        <annotation name='org.jetbrains.annotations.NotNull' />
+    </item>
+</root>
