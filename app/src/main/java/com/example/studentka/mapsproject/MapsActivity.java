@@ -1,11 +1,13 @@
 package com.example.studentka.mapsproject;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -60,6 +62,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         PathParser parser = new PathParser();
         AssetManager mng = getAssets();
+
+       Uri gmmIntentUri = Uri.parse("google.navigation:q=latitude,longitude");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
+
+
         try {
             InputStream str = mng.open("xml_test.xml");
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
