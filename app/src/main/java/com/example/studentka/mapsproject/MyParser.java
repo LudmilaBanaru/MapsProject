@@ -15,9 +15,10 @@ import java.util.ArrayList;
 /**
  * Created by Studentka on 30.04.2015.
  */
-public class PathParser {
+public class MyParser {
 
-public PathParser(){
+public MyParser(){
+
     super();
 }
 

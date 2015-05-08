@@ -1,13 +1,11 @@
 package com.example.studentka.mapsproject;
 
-import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -22,7 +20,6 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -33,20 +30,15 @@ import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, OnMapReadyCallback {
 
-
-    private SupportMapFragment mapFragment;
     private LocationManager locM;
     private GoogleMap gMap;
-    private Marker marker;
     public double latitude;
     public double longitude;
     public double altitude;
     public float accuracy;
-    private String provider;
-    private int status;
-    private Bundle extras;
+    public String newStatus;
 
-
+  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,16 +52,24 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         gMap.setMyLocationEnabled(true);
         gMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        PathParser parser = new PathParser();
-        AssetManager mng = getAssets();
+        //PathParser parser = new PathParser();
+       // AssetManager mng = getAssets();
 
-       Uri gmmIntentUri = Uri.parse("google.navigation:q=latitude,longitude");
+
+
+      /* Uri gmmIntentUri = Uri.parse("google.navigation:q=46.1691764,6.1422485");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
-        startActivity(mapIntent);
-
-
+        startActivity(mapIntent);*/
+        //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<LatLng."+latitude+">,<LatLng."+longitude+">?q=<latLng"+latitude+">,<latLng"+longitude+">(Marker)"));
+       // startActivity(intent);
+       /* String labelLocation = "a";
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + latitude + ">,<" + longitude + ">?q=<" + latitude + ">,<" + longitude + ">(" + labelLocation + ")"));
+        startActivity(intent);*/
         try {
+            MyParser parser = new MyParser();
+            AssetManager mng = getAssets();
+
             InputStream str = mng.open("xml_test.xml");
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
             for (ArrayList<LatLng> arrayList : list) {
@@ -88,8 +88,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             e.printStackTrace();
         }
         try {
+            MyParser parser = new MyParser();
+            AssetManager mng = getAssets();
             InputStream str = mng.open("xml_test.xml");
-
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
 
             for (ArrayList<LatLng> arrayList : list) {
@@ -133,13 +134,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public void onResume() {
         super.onResume();
         locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-
         if (locM.isProviderEnabled(LocationManager.GPS_PROVIDER))
             locM.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
-
         locM.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
+        }
 
-    }
 
 
     @Override
@@ -155,10 +154,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         altitude = location.getAltitude();
         accuracy = location.getAccuracy();
 
-        String msg = String.format(
-                getResources().getString(R.string.new_location), latitude,
+        String msg = String.format( getResources().getString(R.string.new_location), latitude,
                 longitude, altitude, accuracy);
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
         LatLng latLng = new LatLng(latitude, longitude);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
@@ -169,14 +167,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onProviderEnabled(String provider) {
-        String msg = String.format(
-                getResources().getString(R.string.provider_enabled), provider);
+        String msg = String.format(getResources().getString(R.string.provider_enabled), provider);
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        String newStatus = "";
+        //String newStatus = "";
         switch (status) {
             case LocationProvider.OUT_OF_SERVICE:
                 newStatus = "OUT_OF_SERVICE";
