@@ -86,13 +86,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 Polyline polyline = gMap.addPolyline(rectOptions);
                 polyline.setWidth(8);
                 polyline.setColor(Color.RED);
+                gMap.addPolyline(rectOptions);
+
 
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
         try {
 
             InputStream str = mng.open("xml_test.xml");
@@ -121,7 +122,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         if (locM.isProviderEnabled(LocationManager.GPS_PROVIDER))
             locM.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
-
         locM.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
         }
 

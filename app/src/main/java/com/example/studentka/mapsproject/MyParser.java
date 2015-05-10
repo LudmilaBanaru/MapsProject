@@ -39,6 +39,8 @@ public MyParser(){
             Document doc = Jsoup.parse(html, "", Parser.xmlParser());
             ArrayList<String> tracksString = new ArrayList<String>();
 
+
+
             for (Element f : doc.select("latitude")) {
                 System.out.println("Latitude:"+f.toString().replace("<latitude>", "").replace("</latitude>", ""));
                 tracksString.add(f.toString().replace("<latitude>", "").replace("</latitude>", ""));
