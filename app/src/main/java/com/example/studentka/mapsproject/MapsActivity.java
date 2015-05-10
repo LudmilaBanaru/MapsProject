@@ -38,19 +38,21 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public float accuracy;
     public String newStatus;
 
-  
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         GoogleMapOptions mapOptions = new GoogleMapOptions();
 
-        mapOptions.compassEnabled(true)
-                .rotateGesturesEnabled(false)
-                .tiltGesturesEnabled(false);
+
         gMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         gMap.setMyLocationEnabled(true);
         gMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mapOptions.compassEnabled(true)
+                .rotateGesturesEnabled(false)
+                .tiltGesturesEnabled(false);
+
 
         //PathParser parser = new PathParser();
        // AssetManager mng = getAssets();
@@ -66,9 +68,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
        /* String labelLocation = "a";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + latitude + ">,<" + longitude + ">?q=<" + latitude + ">,<" + longitude + ">(" + labelLocation + ")"));
         startActivity(intent);*/
+
+        MyParser parser = new MyParser();
+        AssetManager mng = getAssets();
+
         try {
-            MyParser parser = new MyParser();
-            AssetManager mng = getAssets();
+
 
             InputStream str = mng.open("xml_test.xml");
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
@@ -79,17 +84,17 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     rectOptions.add(temp);
                 }
                 Polyline polyline = gMap.addPolyline(rectOptions);
-                polyline.setWidth(7);
-                polyline.setColor(Color.YELLOW);
-                gMap.addPolyline(rectOptions);
+                polyline.setWidth(8);
+                polyline.setColor(Color.RED);
+
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
         try {
-            MyParser parser = new MyParser();
-            AssetManager mng = getAssets();
+
             InputStream str = mng.open("xml_test.xml");
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
 
@@ -107,27 +112,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-       /* parser = new PathParser();
-        mng = getAssets();
 
-        try {
-            InputStream str = mng.open("xml_test.xml");
-            ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
-            for (ArrayList<LatLng> arrayList : list) {
-                PolylineOptions rectOptions = new PolylineOptions();
-                for (LatLng latLong : arrayList) {
-                    LatLng temp;
-                    temp = new LatLng(latLong.latitude, latLong.longitude);
-                    rectOptions.add(temp);
-                }
-                Polyline polyline = gMap.addPolyline(rectOptions);
-                polyline.setWidth(8);
-                polyline.setColor(Color.RED);
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }*/
     }
 
     @Override
@@ -136,6 +121,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         if (locM.isProviderEnabled(LocationManager.GPS_PROVIDER))
             locM.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
+
         locM.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
         }
 
