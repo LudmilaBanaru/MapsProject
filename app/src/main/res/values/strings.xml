@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="app_name">MapsProject</string>
     <string name="hello_world">Hello world!</string>
@@ -11,4 +12,5 @@
     <string name="new_location">New Location : Latitude = %1$s, Longitude = %2$s, Altitude = %3$s avec une précision de %4$s mètres </string>
     <string name="action_help">Aide</string>
 
-</resources>
+    </resources>
+
