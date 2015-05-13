@@ -12,9 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-/**
- * Created by Studentka on 30.04.2015.
- */
 public class MyParser {
 
 public MyParser(){
@@ -31,6 +28,7 @@ public MyParser(){
             InputStream json = stream;
             BufferedReader in = new BufferedReader(new InputStreamReader(json));
             String str;
+
             while ((str = in.readLine()) != null) {
                 buf.append(str);
             }
@@ -50,8 +48,13 @@ public MyParser(){
                 System.out.println("Longitude:"+e.toString().replace("<longitude>", "").replace("</longitude>", ""));
                 tracksString.add(e.toString().replace("<longitude>", "").replace("</longitude>", ""));
             }
+            for (Element f : doc.select("type")) {
+                System.out.println("Type:"+f.toString().replace("<type>", "").replace("</type>", ""));
+                tracksString.add(f.toString().replace("<latitude>", "").replace("</latitude>", ""));
+            }
 
-                LatLng latLng = new LatLng(Double.parseDouble(tracksString.get(0)),
+
+            LatLng latLng = new LatLng(Double.parseDouble(tracksString.get(0)),
                         Double.parseDouble(tracksString.get(1)));
 
                 ArrayList<LatLng> oneTrack = new ArrayList<LatLng>();

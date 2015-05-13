@@ -10,10 +10,7 @@
      android:orderInCategory="100"
      app:showAsAction="never" />
 
-    <item
-        android:id="@+id/menu_help"
-        app:showAsAction="ifRoom"
-        android:title="@string/action_help"/>
+
 
 
 

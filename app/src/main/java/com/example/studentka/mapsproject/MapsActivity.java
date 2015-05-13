@@ -19,10 +19,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,18 +38,27 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public double altitude;
     public float accuracy;
     public String newStatus;
+    private GoogleDirection gd;
+    private Document mDoc;
+    LatLng end;
+    LatLng start;
+  //  private SupportMapFragment mapFragment;
+   // private GoogleApiClient mGoogleApiClient;
+   // private LocationRequest mLocationRequest;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        GoogleMapOptions mapOptions = new GoogleMapOptions();
-
 
         gMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         gMap.setMyLocationEnabled(true);
         gMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+
+       GoogleMapOptions mapOptions = new GoogleMapOptions();
         mapOptions.compassEnabled(true)
                 .rotateGesturesEnabled(false)
                 .tiltGesturesEnabled(false);
@@ -69,6 +79,21 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + latitude + ">,<" + longitude + ">?q=<" + latitude + ">,<" + longitude + ">(" + labelLocation + ")"));
         startActivity(intent);*/
 
+        gd = new GoogleDirection(this);
+        gd.setOnDirectionResponseListener(new GoogleDirection.OnDirectionResponseListener() {
+            public void onResponse(String status, Document doc, GoogleDirection gd) {
+                mDoc = doc;
+                gMap.addPolyline(gd.getPolyline(doc, 3, Color.RED));
+                gMap.addMarker(new MarkerOptions().position(start)
+                        .icon(BitmapDescriptorFactory.defaultMarker(
+                                BitmapDescriptorFactory.HUE_GREEN)));
+
+                gMap.addMarker(new MarkerOptions().position(end)
+                        .icon(BitmapDescriptorFactory.defaultMarker(
+                                BitmapDescriptorFactory.HUE_GREEN)));
+            }
+        });
+
         MyParser parser = new MyParser();
         AssetManager mng = getAssets();
 
@@ -77,23 +102,30 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
             InputStream str = mng.open("xml_test.xml");
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
-            for (ArrayList<LatLng> arrayList : list) {
-                PolylineOptions rectOptions = new PolylineOptions();
-                for (LatLng latLong : arrayList) {
-                    LatLng temp = new LatLng(latLong.latitude, latLong.longitude);
-                    rectOptions.add(temp);
-                }
-                Polyline polyline = gMap.addPolyline(rectOptions);
-                polyline.setWidth(8);
-                polyline.setColor(Color.RED);
-                gMap.addPolyline(rectOptions);
 
+            for (ArrayList<LatLng> arrayList : list) {
+                //PolylineOptions rectOptions = new PolylineOptions();
+                for (LatLng latLong : arrayList) {
+                    end = new LatLng(latLong.latitude, latLong.longitude);
+                    //rectOptions.add(temp);
+                }
+                //Polyline polyline = gMap.addPolyline(rectOptions);
+                //polyline.setWidth(8);
+                //polyline.setColor(Color.RED);
+                //gMap.addPolyline(rectOptions);
+                locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+                Location myLoc = locM.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                start = new LatLng(myLoc.getLatitude(),myLoc.getLongitude());
+                gd.request(start, end, GoogleDirection.MODE_DRIVING);
 
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+
+
         try {
 
             InputStream str = mng.open("xml_test.xml");

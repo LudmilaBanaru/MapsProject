@@ -4,6 +4,6 @@
     <place nom="nom de la place">
         <type>Handicapé:</type>
         <latitude>latitude = 46.1691764 </latitude>
-        <longitude>longitude = 6.1422485 </longitude>
+       <longitude>longitude = 6.1422485 </longitude>
     </place>
 </parking>
