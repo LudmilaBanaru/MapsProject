@@ -10,12 +10,12 @@
     android:layout_height="match_parent"
     tools:context="com.example.studentka.mapsproject.MapsActivity"/>
 
-    <fragment
+    <fragment  xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        />
-
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
 </android.support.v4.widget.DrawerLayout>

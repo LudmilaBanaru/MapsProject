@@ -1,5 +1,8 @@
 package com.example.studentka.mapsproject;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -8,9 +11,14 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -21,12 +29,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Document;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, OnMapReadyCallback {
@@ -42,6 +54,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private Document mDoc;
     LatLng end;
     LatLng start;
+
+    final CharSequence[] items = { "Parking handicapé", "Parking publique", "Parking voie" };
+    private Dialog dialogBienvenue;
+    private Dialog dialogAbout;
+    private Button buttonAbout;
+    private Button buttonInfo;
+    private ArrayList<Marker> mArray = new ArrayList<>();
+    private int my_previous_selected = -1;
+
   //  private SupportMapFragment mapFragment;
    // private GoogleApiClient mGoogleApiClient;
    // private LocationRequest mLocationRequest;
@@ -56,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         gMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         gMap.setMyLocationEnabled(true);
         gMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
+        gMap.setTrafficEnabled(true);
 
        GoogleMapOptions mapOptions = new GoogleMapOptions();
         mapOptions.compassEnabled(true)
@@ -64,20 +85,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .tiltGesturesEnabled(false);
 
 
-        //PathParser parser = new PathParser();
-       // AssetManager mng = getAssets();
-
-
-
-      /* Uri gmmIntentUri = Uri.parse("google.navigation:q=46.1691764,6.1422485");
+        //Navigation avec Google API
+       /*Uri gmmIntentUri = Uri.parse("google.navigation:q=46.1691764,6.1422485");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         startActivity(mapIntent);*/
-        //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<LatLng."+latitude+">,<LatLng."+longitude+">?q=<latLng"+latitude+">,<latLng"+longitude+">(Marker)"));
-       // startActivity(intent);
-       /* String labelLocation = "a";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + latitude + ">,<" + longitude + ">?q=<" + latitude + ">,<" + longitude + ">(" + labelLocation + ")"));
-        startActivity(intent);*/
+
 
         gd = new GoogleDirection(this);
         gd.setOnDirectionResponseListener(new GoogleDirection.OnDirectionResponseListener() {
@@ -99,20 +112,22 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         try {
 
-
-            InputStream str = mng.open("xml_test.xml");
+            //InputStream str = mng.open("xml_test.xml");
+            URL url= new URL("http://parkingtest1.cfapps.io/GetCoordinate?lat=46.1948892&long=6.1398835&type=Handi");
+            URLConnection uc = url.openConnection();
+            uc.connect();
+            InputStream str =new BufferedInputStream(uc.getInputStream());
+            readStream(str);
+           
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
 
             for (ArrayList<LatLng> arrayList : list) {
-                //PolylineOptions rectOptions = new PolylineOptions();
+
                 for (LatLng latLong : arrayList) {
                     end = new LatLng(latLong.latitude, latLong.longitude);
-                    //rectOptions.add(temp);
+
                 }
-                //Polyline polyline = gMap.addPolyline(rectOptions);
-                //polyline.setWidth(8);
-                //polyline.setColor(Color.RED);
-                //gMap.addPolyline(rectOptions);
+
                 locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
                 Location myLoc = locM.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 start = new LatLng(myLoc.getLatitude(),myLoc.getLongitude());
@@ -126,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
 
 
-        try {
+       /* try {
 
             InputStream str = mng.open("xml_test.xml");
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
@@ -144,7 +159,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
+
+    }
+
+    private void readStream(InputStream str) {
 
     }
 
@@ -235,11 +254,147 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.menu_about:
+                aboutWindow();
+
+                break;
+
+            case R.id.menu_help:
+                startWindow();
+
+                break;
+            case R.id.menu_settings:
+               openAlertSettings(null);
+
+                break;
+
+            default:
+                break;
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startWindow() {
+        final Dialog dialogBienvenu = new Dialog(this);
+        dialogBienvenu.setContentView(R.layout.popup_window_info);
+        dialogBienvenu.setTitle("Parkfind");
+
+        TextView txt = (TextView) dialogBienvenu.findViewById(R.id.infoTxtView);
+        txt.setText(Html.fromHtml(getString(R.string.Bienvenue)));
+        txt.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        buttonInfo = (Button) dialogBienvenu.findViewById(R.id.buttonInfoClose);
+        buttonInfo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBienvenu.dismiss();
+
+            }
+        });
+
+        dialogBienvenu.show();
+        // dialogBienvenu.setCanceledOnTouchOutside(true);
+    }
+
+    public void aboutWindow() {
+
+        dialogAbout = new Dialog(this);
+        dialogAbout.setContentView(R.layout.about_popup);
+        dialogAbout.setTitle("À propos...");
+
+        TextView aboutTxt = (TextView) dialogAbout.findViewById(R.id.aboutView);
+        aboutTxt.setText(Html.fromHtml(getString(R.string.About)));
+
+        dialogAbout.show();
+        //dialogAbout.setCanceledOnTouchOutside(true);
+
+        buttonAbout = (Button) dialogAbout.findViewById(R.id.buttonClose);
+        buttonAbout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogAbout.dismiss();
+
+            }
+        });
+
+    }
+
+
+
+
+    private void openAlertSettings(View view) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                MapsActivity.this);
+
+        alertDialogBuilder.setTitle("Réglages");
+
+        // alertDialogBuilder.setMessage("Eléments affichés");
+
+        alertDialogBuilder.setSingleChoiceItems(items, my_previous_selected,
+                new DialogInterface.OnClickListener() {
+
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub
+                        my_previous_selected = which;
+                        switch (which) {
+                            case 0:
+                                MyParser parser = new MyParser();
+                                AssetManager mng = getAssets();
+
+                                try {
+
+
+                                    InputStream str = mng.open("xml_test.xml");
+                                    ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
+
+                                    for (ArrayList<LatLng> arrayList : list) {
+                                        MarkerOptions markerOpt = new MarkerOptions();
+                                        for (LatLng latLng : arrayList) {
+                                            LatLng tempo = new LatLng(latLng.latitude,latLng.longitude);
+                                            markerOpt.position(tempo);
+                                            System.out.println(latLng.latitude + " - " + latLng.longitude);
+                                        }
+                                        gMap.addMarker(markerOpt);
+
+                                    }
+                                } catch (IOException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+
+                                break;
+                            case 1:
+                                for (Marker m : mArray) {
+
+                                    m.remove();
+                                }
+                                mArray.clear();
+                            default:
+                                break;
+                        }
+
+                    }
+
+                });
+
+
+
+
+    }
+
+        public Document getmDoc() {
+        return mDoc;
+    }
+
+    public void setmDoc(Document mDoc) {
+        this.mDoc = mDoc;
     }
 }
 

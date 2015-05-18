@@ -48,11 +48,6 @@ public MyParser(){
                 System.out.println("Longitude:"+e.toString().replace("<longitude>", "").replace("</longitude>", ""));
                 tracksString.add(e.toString().replace("<longitude>", "").replace("</longitude>", ""));
             }
-            for (Element f : doc.select("type")) {
-                System.out.println("Type:"+f.toString().replace("<type>", "").replace("</type>", ""));
-                tracksString.add(f.toString().replace("<latitude>", "").replace("</latitude>", ""));
-            }
-
 
             LatLng latLng = new LatLng(Double.parseDouble(tracksString.get(0)),
                         Double.parseDouble(tracksString.get(1)));
