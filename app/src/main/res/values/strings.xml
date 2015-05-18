@@ -21,7 +21,7 @@
 
     <string name="action_example">Example action</string>
 
-    <string name="action_about">À Propos</string>
+   <string name="action_about">À Propos</string>
     <string name="action_help">Aide</string>
     <string name="action_settings">Réglages</string>
     <string name="Close">Fermer</string>
@@ -32,13 +32,13 @@
 	  	<p>- Afficher les parkings les plus proches selon la géolocalisation de l\'utilisateur sur une Google Map</p></br>
 	  	<p>- Afficher les parkings selon leur type</p></br>
 	  	]]>
-</string>
+    </string>
     <string name="About" >
-<![CDATA[<h2>Parkfind</h2></br>
-<p>Cette application a été réalisée dans le cadre d\'un cours à l\'université de Genève</p></br>
-<p>Dans ce projet, nous avons également mis en place un site web qui reprend le concept de l\'application mobile.</p></br>
-<p>Sur le web, contrairement à l\'application, il vous sera demandé d\'entrer un lieu pour que votre position s\'affiche sur la carte</p>]]>
-   </string>
+    <![CDATA[<h2>Parkfind</h2></br>
+    <p>Cette application a été réalisée dans le cadre d\'un cours à l\'université de Genève</p></br>
+    <p>Dans ce projet, nous avons également mis en place un site web qui reprend le concept de l\'application mobile.</p></br>
+    <p>Sur le web, contrairement à l\'application, il vous sera demandé d\'entrer un lieu pour que votre position s\'affiche sur la carte</p>]]>
+    </string>
 
 
 </resources>

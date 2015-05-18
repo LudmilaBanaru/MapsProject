@@ -34,11 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Document;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, OnMapReadyCallback {
@@ -112,13 +109,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         try {
 
-            //InputStream str = mng.open("xml_test.xml");
-            URL url= new URL("http://parkingtest1.cfapps.io/GetCoordinate?lat=46.1948892&long=6.1398835&type=Handi");
+            InputStream str = mng.open("xml_test.xml");
+           /* URL url= new URL("http://parkingtest1.cfapps.io/GetCoordinate?lat=46.1948892&long=6.1398835&type=Handi");
             URLConnection uc = url.openConnection();
             uc.connect();
             InputStream str =new BufferedInputStream(uc.getInputStream());
-            readStream(str);
-           
+            readStream(str);*/
+
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
 
             for (ArrayList<LatLng> arrayList : list) {
@@ -141,7 +138,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
 
 
-       /* try {
+        try {
 
             InputStream str = mng.open("xml_test.xml");
             ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
@@ -159,13 +156,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }*/
+        }
 
     }
 
-    private void readStream(InputStream str) {
 
-    }
 
     @Override
     public void onResume() {
