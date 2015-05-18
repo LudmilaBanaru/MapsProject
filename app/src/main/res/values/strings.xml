@@ -26,6 +26,7 @@
     <string name="action_settings">Réglages</string>
     <string name="Close">Fermer</string>
     <string name="infoClose">Fermer</string>
+
     <string name="Bienvenue">
     <![CDATA[<h3>Bienvenu dans notre application!</h3></br>
 	  	<p>Principale fonctionnalités:</p></br>
@@ -33,6 +34,7 @@
 	  	<p>- Afficher les parkings selon leur type</p></br>
 	  	]]>
     </string>
+
     <string name="About" >
     <![CDATA[<h2>Parkfind</h2></br>
     <p>Cette application a été réalisée dans le cadre d\'un cours à l\'université de Genève</p></br>

@@ -38,6 +38,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+
+
+/**
+ * Activité principale de l'application ParkFind qui génère la Google Map et les
+ * activités qui lui sont liées.
+ *
+ * @author Julien Burn & Ludmila Banaru
+ *
+ */
 public class MapsActivity extends FragmentActivity implements LocationListener, OnMapReadyCallback {
 
     private LocationManager locM;
@@ -57,6 +66,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private Dialog dialogAbout;
     private Button buttonAbout;
     private Button buttonInfo;
+    private MarkerOptions markerOpt;
     private ArrayList<Marker> mArray = new ArrayList<>();
     private int my_previous_selected = -1;
 
@@ -64,12 +74,24 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
    // private GoogleApiClient mGoogleApiClient;
    // private LocationRequest mLocationRequest;
 
-
+    /**
+     * Méthode OnCreate où l'on instancie la Google Map avec ses options.
+     * Instanciation d'un objet de la classe MyParser pour dessiner les
+     * polylines en fonction des coordonnées parsées.
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        /**
+         * On lance la méthode startWindow qui affiche un message de bienvenue
+         * au démarrage de l'application
+         *
+         * @see startWindow()
+         * */
+        startWindow();
 
         gMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         gMap.setMyLocationEnabled(true);
@@ -103,7 +125,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                                 BitmapDescriptorFactory.HUE_GREEN)));
             }
         });
-
+        /**
+         * Instanciation d'un objet de la classe MyParser
+         * On récupère les données parsées dans les arraylist pour créer les polylines sur la Google Map
+         *
+         * @see MyParser
+         */
         MyParser parser = new MyParser();
         AssetManager mng = getAssets();
 
@@ -161,7 +188,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
 
-
+    /**
+     * Le locationManager locM relance l'opération de recherche de fournisseur de service
+     * à la reprise de l'application
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -171,14 +201,21 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         locM.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
         }
 
-
+    /**
+     * Lorsque l'application est mise en pause (arrière plan), on arrête la
+     * recherche de fournisseur de service
+     */
 
     @Override
     public void onPause() {
         super.onPause();
         locM.removeUpdates(this);
     }
-
+    /**
+     * Méthode qui gère la localisation. À chaque déplacement de l'utilisateur,
+    * cette méthode cherche les nouvelles coordonnées. La caméra se déplacera en
+    * fonction de la position
+    */
     @Override
     public void onLocationChanged(Location location) {
         latitude = location.getLatitude();
@@ -195,13 +232,23 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         gMap.animateCamera(cameraUpdate);
         locM.removeUpdates(this);
     }
-
+    /**
+     *Genère un message quand le provider
+     *  est disponible
+     *
+     */
 
     @Override
     public void onProviderEnabled(String provider) {
         String msg = String.format(getResources().getString(R.string.provider_enabled), provider);
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
+
+    /**
+     *Genère un message quand le provider
+     * change son status
+     *
+     */
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -222,6 +269,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 getResources().getString(R.string.provider_disabled), provider);
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
+    /**
+     *Genère un message quand le provider
+     *  n'est pas dispononble
+     *
+     */
 
 
     @Override
@@ -243,6 +295,17 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         inflater.inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+    /**
+     * Cette méthode gère la séléction des éléments du menu. Chaque élément ou
+     * "item" démarre une action spécifique générée par les différentes méthodes
+     *
+     * item
+     * @return item qui représente un élément du menu
+     *
+     * aboutWindow()
+     * startWindow()
+     * openAlertSettings()
+     */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -271,52 +334,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         return super.onOptionsItemSelected(item);
     }
 
-    private void startWindow() {
-        final Dialog dialogBienvenu = new Dialog(this);
-        dialogBienvenu.setContentView(R.layout.popup_window_info);
-        dialogBienvenu.setTitle("Parkfind");
-
-        TextView txt = (TextView) dialogBienvenu.findViewById(R.id.infoTxtView);
-        txt.setText(Html.fromHtml(getString(R.string.Bienvenue)));
-        txt.setMovementMethod(ScrollingMovementMethod.getInstance());
-
-        buttonInfo = (Button) dialogBienvenu.findViewById(R.id.buttonInfoClose);
-        buttonInfo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBienvenu.dismiss();
-
-            }
-        });
-
-        dialogBienvenu.show();
-        // dialogBienvenu.setCanceledOnTouchOutside(true);
-    }
-
-    public void aboutWindow() {
-
-        dialogAbout = new Dialog(this);
-        dialogAbout.setContentView(R.layout.about_popup);
-        dialogAbout.setTitle("À propos...");
-
-        TextView aboutTxt = (TextView) dialogAbout.findViewById(R.id.aboutView);
-        aboutTxt.setText(Html.fromHtml(getString(R.string.About)));
-
-        dialogAbout.show();
-        //dialogAbout.setCanceledOnTouchOutside(true);
-
-        buttonAbout = (Button) dialogAbout.findViewById(R.id.buttonClose);
-        buttonAbout.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogAbout.dismiss();
-
-            }
-        });
-
-    }
 
 
 
@@ -378,13 +395,82 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     }
 
                 });
+        // set positive button: Yes message
+        alertDialogBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
 
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show alert
+
+        alertDialog.show();
 
 
 
     }
 
-        public Document getmDoc() {
+    /**
+     * Méthode qui gère le dialog de bienvenue au démarrage de l'application
+     */
+    private void startWindow() {
+        final Dialog dialogBienvenu = new Dialog(this);
+        dialogBienvenu.setContentView(R.layout.popup_window_info);
+        dialogBienvenu.setTitle("Parkfind");
+
+        TextView txt = (TextView) dialogBienvenu.findViewById(R.id.infoTxtView);
+        txt.setText(Html.fromHtml(getString(R.string.Bienvenue)));
+        txt.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        buttonInfo = (Button) dialogBienvenu.findViewById(R.id.buttonInfoClose);
+        buttonInfo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBienvenu.dismiss();
+
+            }
+        });
+
+        dialogBienvenu.show();
+        // dialogBienvenu.setCanceledOnTouchOutside(true);
+    }
+
+
+    /**
+     * Méthode qui génère le dialog lorsque "à propos" est cliqué
+     */
+    public void aboutWindow() {
+
+        dialogAbout = new Dialog(this);
+        dialogAbout.setContentView(R.layout.about_popup);
+        dialogAbout.setTitle("À propos...");
+
+        TextView aboutTxt = (TextView) dialogAbout.findViewById(R.id.aboutView);
+        aboutTxt.setText(Html.fromHtml(getString(R.string.About)));
+
+        dialogAbout.show();
+        //dialogAbout.setCanceledOnTouchOutside(true);
+
+        buttonAbout = (Button) dialogAbout.findViewById(R.id.buttonClose);
+        buttonAbout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogAbout.dismiss();
+
+            }
+        });
+
+    }
+
+
+    public Document getmDoc() {
         return mDoc;
     }
 
