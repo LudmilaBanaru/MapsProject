@@ -1,5 +1,7 @@
 package com.example.studentka.mapsproject;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import org.jsoup.Jsoup;
@@ -48,7 +50,8 @@ public MyParser(){
                 System.out.println("Longitude:"+e.toString().replace("<longitude>", "").replace("</longitude>", ""));
                 tracksString.add(e.toString().replace("<longitude>", "").replace("</longitude>", ""));
             }
-
+            Log.d("mytage", tracksString.get(0));
+            Log.d("mytage", tracksString.get(1));
             LatLng latLng = new LatLng(Double.parseDouble(tracksString.get(0)),
                         Double.parseDouble(tracksString.get(1)));
 

@@ -1,18 +1,17 @@
 package com.example.studentka.mapsproject;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,10 +33,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Document;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-
 
 
 /**
@@ -47,7 +44,7 @@ import java.util.ArrayList;
  * @author Julien Burn & Ludmila Banaru
  *
  */
-public class MapsActivity extends FragmentActivity implements LocationListener, OnMapReadyCallback {
+public class MapsActivity extends ActionBarActivity implements LocationListener, OnMapReadyCallback {
 
     private LocationManager locM;
     private GoogleMap gMap;
@@ -60,6 +57,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private Document mDoc;
     LatLng end;
     LatLng start;
+    Double myLat;
+    Double myLong;
 
     final CharSequence[] items = { "Parking handicapé", "Parking publique", "Parking voie" };
     private Dialog dialogBienvenue;
@@ -80,10 +79,24 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
      * polylines en fonction des coordonnées parsées.
      */
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
+
+        locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        Location myLoc = locM.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        myLat=  myLoc.getLatitude();
+        myLong = myLoc.getLongitude();
+
+        new TacheAsynchrone().execute();
+
+        start = new LatLng(myLoc.getLatitude(),myLoc.getLongitude());
+        end = new LatLng(myLoc.getLatitude(),myLoc.getLongitude());
+
 
         /**
          * On lance la méthode startWindow qui affiche un message de bienvenue
@@ -98,20 +111,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         gMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         gMap.setTrafficEnabled(true);
 
-       GoogleMapOptions mapOptions = new GoogleMapOptions();
+        GoogleMapOptions mapOptions = new GoogleMapOptions();
         mapOptions.compassEnabled(true)
                 .rotateGesturesEnabled(false)
                 .tiltGesturesEnabled(false);
 
-
-        //Navigation avec Google API
-       /*Uri gmmIntentUri = Uri.parse("google.navigation:q=46.1691764,6.1422485");
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        startActivity(mapIntent);*/
-
-
+       /* création d'une polyline entre les deux markers.*/
         gd = new GoogleDirection(this);
+
         gd.setOnDirectionResponseListener(new GoogleDirection.OnDirectionResponseListener() {
             public void onResponse(String status, Document doc, GoogleDirection gd) {
                 mDoc = doc;
@@ -125,25 +132,43 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                                 BitmapDescriptorFactory.HUE_GREEN)));
             }
         });
+        gd.request(start, end, GoogleDirection.MODE_DRIVING);
+
         /**
          * Instanciation d'un objet de la classe MyParser
-         * On récupère les données parsées dans les arraylist pour créer les polylines sur la Google Map
-         *
+         * On récupère les données parsées dans les arraylist pour créer les markers  sur la Google Map
+         * start sera ma géolocalisation et end les coordionées obtenus après avoir parser le XML.
          * @see MyParser
          */
-        MyParser parser = new MyParser();
-        AssetManager mng = getAssets();
 
-        try {
+    }
 
-            InputStream str = mng.open("xml_test.xml");
-           /* URL url= new URL("http://parkingtest1.cfapps.io/GetCoordinate?lat=46.1948892&long=6.1398835&type=Handi");
-            URLConnection uc = url.openConnection();
-            uc.connect();
-            InputStream str =new BufferedInputStream(uc.getInputStream());
-            readStream(str);*/
+    private class TacheAsynchrone extends AsyncTask<Void,Void,Void> {
 
-            ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
+
+        @Override
+        protected Void doInBackground(Void... param) {
+            Log.d("mytag", "start background...");
+            ParserXML file = new ParserXML();
+            InputStream in = file.getXmlFromUrl("http://parkingtest1.cfapps.io/GetCoordinate?lat="+String.valueOf(myLat)+"&long="+String.valueOf(myLong)+"&type=Handi");
+            //Log.d("mytag", str);
+            String str = file.convertStreamToString(in);
+            Log.d("mytag", str);
+            Document doc = file.getDomElement(str);
+            String valueLat = file.getValue(doc.getDocumentElement(), "latitude");
+            String valueLong = file.getValue(doc.getDocumentElement(), "longitude");
+            Log.d("mytag", valueLat);
+            Log.d("mytag", valueLong);
+            end = new LatLng(Double.parseDouble(valueLat),
+                    Double.parseDouble(valueLong));
+            return null;
+        }
+
+
+        protected void onPostExecute(InputStream result) {
+            Log.d("mytag", "start onpost...");
+            MyParser parser = new MyParser();
+            ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(result);
 
             for (ArrayList<LatLng> arrayList : list) {
 
@@ -152,53 +177,22 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
                 }
 
-                locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-                Location myLoc = locM.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                start = new LatLng(myLoc.getLatitude(),myLoc.getLongitude());
-                gd.request(start, end, GoogleDirection.MODE_DRIVING);
 
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
         }
-
-
-
-        try {
-
-            InputStream str = mng.open("xml_test.xml");
-            ArrayList<ArrayList<LatLng>> list = parser.getCoordinateArrays(str);
-
-            for (ArrayList<LatLng> arrayList : list) {
-                MarkerOptions markerOpt = new MarkerOptions();
-                for (LatLng latLng : arrayList) {
-                    LatLng tempo = new LatLng(latLng.latitude,latLng.longitude);
-                    markerOpt.position(tempo);
-                    System.out.println(latLng.latitude + " - " + latLng.longitude);
-                }
-                gMap.addMarker(markerOpt);
-
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
     }
-
-
-    /**
-     * Le locationManager locM relance l'opération de recherche de fournisseur de service
-     * à la reprise de l'application
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        if (locM.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            locM.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
-        locM.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
+        /**
+         * Le locationManager locM relance l'opération de recherche de fournisseur de service
+         * à la reprise de l'application
+         */
+        @Override
+        public void onResume () {
+            super.onResume();
+            locM = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+            if (locM.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                locM.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
+            locM.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
         }
 
     /**
@@ -293,7 +287,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
+        return true;
     }
     /**
      * Cette méthode gère la séléction des éléments du menu. Chaque élément ou
@@ -323,7 +318,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
                 break;
             case R.id.menu_settings:
-               openAlertSettings(null);
+              // openAlertSettings(null);
 
                 break;
 
@@ -338,14 +333,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
 
 
-    private void openAlertSettings(View view) {
+  /*  private void openAlertSettings(View view) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 MapsActivity.this);
 
-        alertDialogBuilder.setTitle("Réglages");
+        alertDialogBuilder.setTitle("Choisissez le type de parking");
 
-        // alertDialogBuilder.setMessage("Eléments affichés");
+
 
         alertDialogBuilder.setSingleChoiceItems(items, my_previous_selected,
                 new DialogInterface.OnClickListener() {
@@ -394,9 +389,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
                     }
 
-                });
+                });*/
         // set positive button: Yes message
-        alertDialogBuilder.setPositiveButton("Ok",
+        /*alertDialogBuilder.setPositiveButton("Ok",
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
@@ -407,11 +402,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         AlertDialog alertDialog = alertDialogBuilder.create();
 
-        // show alert
+        // montre l'alerte
 
         alertDialog.show();
-
-
 
     }
 
@@ -438,9 +431,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         });
 
         dialogBienvenu.show();
-        // dialogBienvenu.setCanceledOnTouchOutside(true);
-    }
 
+    }
 
     /**
      * Méthode qui génère le dialog lorsque "à propos" est cliqué
@@ -455,8 +447,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         aboutTxt.setText(Html.fromHtml(getString(R.string.About)));
 
         dialogAbout.show();
-        //dialogAbout.setCanceledOnTouchOutside(true);
-
         buttonAbout = (Button) dialogAbout.findViewById(R.id.buttonClose);
         buttonAbout.setOnClickListener(new View.OnClickListener() {
 
@@ -468,6 +458,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         });
 
     }
+
+
+
+    //private ProgressBar progressBar;
+    //private Button button;
 
 
     public Document getmDoc() {

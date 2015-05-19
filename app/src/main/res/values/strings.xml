@@ -23,7 +23,7 @@
 
    <string name="action_about">À Propos</string>
     <string name="action_help">Aide</string>
-    <string name="action_settings">Réglages</string>
+    <string name="action_settings">Choisissez le type de parking</string>
     <string name="Close">Fermer</string>
     <string name="infoClose">Fermer</string>
 
