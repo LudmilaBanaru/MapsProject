@@ -12,7 +12,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -39,29 +38,9 @@ import javax.xml.parsers.ParserConfigurationException;
 @SuppressLint("NewApi")
 public class GoogleDirection {
     public final static String MODE_DRIVING = "driving";
-    public final static String MODE_WALKING = "walking";
-    public final static String MODE_BICYCLING = "bicycling";
-
-    public final static String STATUS_OK = "OK";
-    public final static String STATUS_NOT_FOUND = "NOT_FOUND";
-    public final static String STATUS_ZERO_RESULTS = "ZERO_RESULTS";
-    public final static String STATUS_MAX_WAYPOINTS_EXCEEDED = "MAX_WAYPOINTS_EXCEEDED";
-    public final static String STATUS_INVALID_REQUEST = "INVALID_REQUEST";
-    public final static String STATUS_OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
-    public final static String STATUS_REQUEST_DENIED = "REQUEST_DENIED";
-    public final static String STATUS_UNKNOWN_ERROR = "UNKNOWN_ERROR";
-
-    public final static int SPEED_VERY_FAST = 1;
-    public final static int SPEED_FAST = 2;
-    public final static int SPEED_NORMAL = 3;
-    public final static int SPEED_SLOW = 4;
-    public final static int SPEED_VERY_SLOW = 5;
-
     private OnDirectionResponseListener mDirectionListener = null;
     private OnAnimateListener mAnimateListener = null;
-
     private boolean isLogging = false;
-
     private LatLng animateMarkerPosition = null;
     private LatLng beginPosition = null;
     private LatLng endPosition = null;
@@ -134,138 +113,6 @@ public class GoogleDirection {
                 Log.i("GoogleDirection", "Status : " + node1.getTextContent());
             return node1.getTextContent();
         }
-    }
-
-    public void setLogging(boolean state) {
-        isLogging = state;
-    }
-
-    public String getStatus(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("status");
-        Node node1 = nl1.item(0);
-        if(isLogging)
-            Log.i("GoogleDirection", "Status : " + node1.getTextContent());
-        return node1.getTextContent();
-    }
-
-    public String[] getDurationText(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("duration");
-        String[] arr_str = new String[nl1.getLength() - 1];
-        for(int i = 0 ; i < nl1.getLength() - 1 ; i++) {
-            Node node1 = nl1.item(i);
-            NodeList nl2 = node1.getChildNodes();
-            Node node2 = nl2.item(getNodeIndex(nl2, "text"));
-            arr_str[i] = node2.getTextContent();
-            if(isLogging)
-                Log.i("GoogleDirection", "DurationText : " + node2.getTextContent());
-        }
-        return arr_str;
-    }
-
-    public int[] getDurationValue(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("duration");
-        int[] arr_int = new int[nl1.getLength() - 1];
-        for(int i = 0 ; i < nl1.getLength() - 1 ; i++) {
-            Node node1 = nl1.item(i);
-            NodeList nl2 = node1.getChildNodes();
-            Node node2 = nl2.item(getNodeIndex(nl2, "value"));
-            arr_int[i] = Integer.parseInt(node2.getTextContent());
-            if(isLogging)
-                Log.i("GoogleDirection", "Duration : " + node2.getTextContent());
-        }
-        return arr_int;
-    }
-
-    public String getTotalDurationText(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("duration");
-        Node node1 = nl1.item(nl1.getLength() - 1);
-        NodeList nl2 = node1.getChildNodes();
-        Node node2 = nl2.item(getNodeIndex(nl2, "text"));
-        if(isLogging)
-            Log.i("GoogleDirection", "TotalDuration : " + node2.getTextContent());
-        return node2.getTextContent();
-    }
-
-    public int getTotalDurationValue(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("duration");
-        Node node1 = nl1.item(nl1.getLength() - 1);
-        NodeList nl2 = node1.getChildNodes();
-        Node node2 = nl2.item(getNodeIndex(nl2, "value"));
-        if(isLogging)
-            Log.i("GoogleDirection", "TotalDuration : " + node2.getTextContent());
-        return Integer.parseInt(node2.getTextContent());
-    }
-
-    public String[] getDistanceText(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("distance");
-        String[] arr_str = new String[nl1.getLength() - 1];
-        for(int i = 0 ; i < nl1.getLength() - 1 ; i++) {
-            Node node1 = nl1.item(i);
-            NodeList nl2 = node1.getChildNodes();
-            Node node2 = nl2.item(getNodeIndex(nl2, "text"));
-            arr_str[i] = node2.getTextContent();
-            if(isLogging)
-                Log.i("GoogleDirection", "DurationText : " + node2.getTextContent());
-        }
-        return arr_str;
-    }
-
-    public int[] getDistanceValue(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("distance");
-        int[] arr_int = new int[nl1.getLength() - 1];
-        for(int i = 0 ; i < nl1.getLength() - 1 ; i++) {
-            Node node1 = nl1.item(i);
-            NodeList nl2 = node1.getChildNodes();
-            Node node2 = nl2.item(getNodeIndex(nl2, "value"));
-            arr_int[i] = Integer.parseInt(node2.getTextContent());
-            if(isLogging)
-                Log.i("GoogleDirection", "Duration : " + node2.getTextContent());
-        }
-        return arr_int;
-    }
-
-    public String getTotalDistanceText(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("distance");
-        Node node1 = nl1.item(nl1.getLength() - 1);
-        NodeList nl2 = node1.getChildNodes();
-        Node node2 = nl2.item(getNodeIndex(nl2, "text"));
-        if(isLogging)
-            Log.i("GoogleDirection", "TotalDuration : " + node2.getTextContent());
-        return node2.getTextContent();
-    }
-
-    public int getTotalDistanceValue(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("distance");
-        Node node1 = nl1.item(nl1.getLength() - 1);
-        NodeList nl2 = node1.getChildNodes();
-        Node node2 = nl2.item(getNodeIndex(nl2, "value"));
-        if(isLogging)
-            Log.i("GoogleDirection", "TotalDuration : " + node2.getTextContent());
-        return Integer.parseInt(node2.getTextContent());
-    }
-
-    public String getStartAddress(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("start_address");
-        Node node1 = nl1.item(0);
-        if(isLogging)
-            Log.i("GoogleDirection", "StartAddress : " + node1.getTextContent());
-        return node1.getTextContent();
-    }
-
-    public String getEndAddress(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("end_address");
-        Node node1 = nl1.item(0);
-        if(isLogging)
-            Log.i("GoogleDirection", "StartAddress : " + node1.getTextContent());
-        return node1.getTextContent();
-    }
-
-    public String getCopyRights(Document doc) {
-        NodeList nl1 = doc.getElementsByTagName("copyrights");
-        Node node1 = nl1.item(0);
-        if(isLogging)
-            Log.i("GoogleDirection", "CopyRights : " + node1.getTextContent());
-        return node1.getTextContent();
     }
 
     public ArrayList<LatLng> getDirection(Document doc) {
@@ -384,9 +231,7 @@ public class GoogleDirection {
         mDirectionListener = listener;
     }
 
-    public void setOnAnimateListener(OnAnimateListener listener) {
-        mAnimateListener = listener;
-    }
+
 
     public interface OnDirectionResponseListener {
         public void onResponse(String status, Document doc, GoogleDirection gd);
@@ -396,90 +241,6 @@ public class GoogleDirection {
         public void onFinish();
         public void onStart();
         public void onProgress(int progress, int total);
-    }
-
-    public void animateDirection(GoogleMap gm, ArrayList<LatLng> direction, int speed
-            , boolean cameraLock, boolean isCameraTilt, boolean isCameraZoom
-            , boolean drawMarker, MarkerOptions mo, boolean flatMarker
-            , boolean drawLine, PolylineOptions po) {
-        if(direction.size() > 1) {
-            isAnimated = true;
-            animatePositionList = direction;
-            animateSpeed = speed;
-            this.drawMarker = drawMarker;
-            this.drawLine = drawLine;
-            this.flatMarker = flatMarker;
-            this.isCameraTilt = isCameraTilt;
-            this.isCameraZoom = isCameraZoom;
-            step = 0;
-            this.cameraLock = cameraLock;
-            this.gm = gm;
-
-            setCameraUpdateSpeed(speed);
-
-            beginPosition = animatePositionList.get(step);
-            endPosition = animatePositionList.get(step + 1);
-            animateMarkerPosition = beginPosition;
-
-            if(mAnimateListener != null)
-                mAnimateListener.onProgress(step, animatePositionList.size());
-
-            if(cameraLock) {
-                float bearing = getBearing(beginPosition, endPosition);
-                CameraPosition.Builder cameraBuilder = new CameraPosition.Builder()
-                        .target(animateMarkerPosition).bearing(bearing);
-
-                if(isCameraTilt)
-                    cameraBuilder.tilt(90);
-                else
-                    cameraBuilder.tilt(gm.getCameraPosition().tilt);
-
-                if(isCameraZoom)
-                    cameraBuilder.zoom(zoom);
-                else
-                    cameraBuilder.zoom(gm.getCameraPosition().zoom);
-
-                CameraPosition cameraPosition = cameraBuilder.build();
-                gm.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-
-            if(drawMarker) {
-                if(mo != null)
-                    animateMarker = gm.addMarker(mo.position(beginPosition));
-                else
-                    animateMarker = gm.addMarker(new MarkerOptions().position(beginPosition));
-
-                if(flatMarker) {
-                    animateMarker.setFlat(true);
-
-                    float rotation = getBearing(animateMarkerPosition, endPosition) + 180;
-                    animateMarker.setRotation(rotation);
-                }
-            }
-
-
-            if(drawLine) {
-                if(po != null)
-                    animateLine = gm.addPolyline(po.add(beginPosition)
-                            .add(beginPosition).add(endPosition)
-                            .width(dpToPx((int)po.getWidth())));
-                else
-                    animateLine = gm.addPolyline(new PolylineOptions()
-                            .width(dpToPx(5)));
-            }
-
-            new Handler().postDelayed(r, speed);
-            if(mAnimateListener != null)
-                mAnimateListener.onStart();
-        }
-    }
-
-    public void cancelAnimated() {
-        isAnimated = false;
-    }
-
-    public boolean isAnimated() {
-        return isAnimated;
     }
 
     private Runnable r = new Runnable() {
@@ -547,14 +308,6 @@ public class GoogleDirection {
         }
     };
 
-    public Marker getAnimateMarker() {
-        return animateMarker;
-    }
-
-    public Polyline getAnimatePolyline() {
-        return animateLine;
-    }
-
     private LatLng getNewPosition(LatLng begin, LatLng end) {
         double lat = Math.abs(begin.latitude - end.latitude);
         double lng = Math.abs(begin.longitude - end.longitude);
@@ -596,40 +349,6 @@ public class GoogleDirection {
         else if(begin.latitude < end.latitude && begin.longitude >= end.longitude)
             return (float)((90 - Math.toDegrees(Math.atan(lng / lat))) + 270);
         return -1;
-    }
-
-    public void setCameraUpdateSpeed(int speed) {
-        if(speed == SPEED_VERY_SLOW) {
-            animateDistance = 0.000005;
-            animateSpeed = 20;
-            animateCamera = 0.0004;
-            zoom = 19;
-        } else if(speed == SPEED_SLOW) {
-            animateDistance = 0.00001;
-            animateSpeed = 20;
-            animateCamera = 0.0008;
-            zoom = 18;
-        } else if(speed == SPEED_NORMAL) {
-            animateDistance = 0.00005;
-            animateSpeed = 20;
-            animateCamera = 0.002;
-            zoom = 16;
-        } else if(speed == SPEED_FAST) {
-            animateDistance = 0.0001;
-            animateSpeed = 20;
-            animateCamera = 0.004;
-            zoom = 15;
-        } else if(speed == SPEED_VERY_FAST) {
-            animateDistance = 0.0005;
-            animateSpeed = 20;
-            animateCamera = 0.004;
-            zoom = 13;
-        } else {
-            animateDistance = 0.00005;
-            animateSpeed = 20;
-            animateCamera = 0.002;
-            zoom = 16;
-        }
     }
 }
 

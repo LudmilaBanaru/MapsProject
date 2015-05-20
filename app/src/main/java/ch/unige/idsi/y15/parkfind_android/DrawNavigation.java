@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class TestActivity extends ActionBarActivity
+public class DrawNavigation extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
@@ -135,7 +135,7 @@ public class TestActivity extends ActionBarActivity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((TestActivity) activity).onSectionAttached(
+            ((DrawNavigation) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }

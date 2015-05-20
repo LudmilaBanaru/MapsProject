@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ch.unige.idsi.y15.parkfind_android.TestActivity"
+            android:name=".DrawNavigation"
             android:label="@string/title_activity_test" >
         </activity>
     </application>

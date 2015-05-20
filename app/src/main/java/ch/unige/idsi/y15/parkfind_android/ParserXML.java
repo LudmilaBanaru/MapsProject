@@ -1,6 +1,5 @@
 package ch.unige.idsi.y15.parkfind_android;
 
-import android.content.Context;
 import android.util.Log;
 
 import org.apache.http.client.ClientProtocolException;
@@ -13,19 +12,11 @@ import org.xml.sax.SAXException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -33,14 +24,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-/**
- * Created by Studentka on 19.05.2015.
- */
+/* A class that parse un XML file and gets the coordinates for our app*/
 public class ParserXML {
-
     // constructor
     public ParserXML() {
-
     }
 
     /**
@@ -59,15 +46,6 @@ public class ParserXML {
             URLConnection uc = url_2.openConnection();
             uc.connect();
             str = new BufferedInputStream(uc.getInputStream());
-            //xml = convertStreamToString(str);
-            // defaultHttpClient
-           /* DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(url);
-
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            xml = EntityUtils.toString(httpEntity);*/
-
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {
@@ -76,14 +54,10 @@ public class ParserXML {
             e.printStackTrace();
         }
         // return XML
-        Log.d("mytag", "getXmlFromUrl end...");
-
-        //Log.d("mytag",str);
         return str;
     }
-
+     /*Class that converts Stream to String*/
     public String convertStreamToString(InputStream is) {
-        Log.d("mytag", "convertStreamToString start...");
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
 
@@ -101,76 +75,7 @@ public class ParserXML {
                 e.printStackTrace();
             }
         }
-        Log.d("mytag", "convertStreamToString end...");
         return sb.toString();
-    }
-
-    public String readXMLFromFile(Context activity, String xmlFile)
-    {
-        InputStream is = null;
-        File file = null;
-        Writer writer = new StringWriter();
-        file = new File(xmlFile);
-        if (!(file == null))
-        {
-            try {
-                is = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        if (is != null)
-        {
-
-            char[] buffer = new char[1024];
-            try
-            {
-                Reader reader = new BufferedReader(
-                        new InputStreamReader(is, "UTF-8"));
-                int n;
-                while ((n = reader.read(buffer)) != -1) {
-                    writer.write(buffer, 0, n);
-                }
-                is.close();
-            }
-            catch (IOException e) {
-                Log.e("Error: ", e.getMessage());
-                return null;
-            }
-        }
-
-        return writer.toString();
-    }
-
-    public void writeXMLToFile(Context context, String xmlFile, String xmlData)
-    {
-        FileOutputStream fOut = null;
-        OutputStreamWriter osw = null;
-
-        try
-        {
-            fOut = new FileOutputStream(new File(xmlFile));
-            osw = new OutputStreamWriter(fOut);
-            osw.write(xmlData);
-            osw.flush();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                osw.close();
-                fOut.close();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -178,7 +83,6 @@ public class ParserXML {
      *  XML string
      * */
     public Document getDomElement(String xml){
-        Log.d("mytag", "getDomElement start...");
         Document doc = null;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
@@ -188,18 +92,14 @@ public class ParserXML {
             doc = db.parse(is);
         }
         catch (ParserConfigurationException e) {
-            Log.e("Error: ", e.getMessage());
             return null;
         }
         catch (SAXException e) {
-            Log.e("Error: ", e.getMessage());
             return null;
         }
         catch (IOException e) {
-            Log.e("Error: ", e.getMessage());
             return null;
         }
-        Log.d("mytag", "getDomElement end...");
         return doc;
     }
 
@@ -226,26 +126,7 @@ public class ParserXML {
      *  key string
      * */
     public String getValue(Element item, String str) {
-        Log.d("mytag", "getValue start...");
         NodeList n = item.getElementsByTagName(str);
-        Log.d("mytag", "getValue end...");
         return this.getElementValue(n.item(0));
-    }
-
-    public void setValue(Element elem, String str){
-        Node child;
-        if( elem != null){
-            if (elem.hasChildNodes()){
-                for( child = elem.getFirstChild(); child != null; child = child.getNextSibling() ){
-                    if( child.getNodeType() == Node.TEXT_NODE  ){
-                        child.setNodeValue(str);
-                    }
-                }
-            }
-        }
-    }
-
-    public String GetElementAttribute(Element item, String attribName){
-        return item.getAttribute(attribName);
     }
 }
