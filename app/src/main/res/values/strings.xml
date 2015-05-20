@@ -43,5 +43,10 @@
     </string>
 
 
+    <string name="parkingHandi">Parking Handi</string>
+    <string name="parkingPublic">parkingPublic</string>
+    <string name="parkingVoie">parkingVoie</string>
+
+
 </resources>
 
