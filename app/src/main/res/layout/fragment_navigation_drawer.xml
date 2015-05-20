@@ -6,4 +6,4 @@
     android:divider="@android:color/transparent"
     android:dividerHeight="0dp"
     android:background="#cccc"
-    tools:context="com.example.studentka.mapsproject.NavigationDrawerFragment" />
+    tools:context="ch.unige.idsi.y15.parkfind_android.NavigationDrawerFragment" />

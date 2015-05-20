@@ -1,4 +1,4 @@
-package com.example.studentka.mapsproject;
+package ch.unige.idsi.y15.parkfind_android;
 
 /**
  * Created by Studentka on 29.03.2015.

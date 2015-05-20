@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="app_name">MapsProject</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">ParkFind</string>
 
     <string name="title_activity_main">Main</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">ParkFind</string>
     <string name="title_activity_location">Location</string>
     <string name="provider_enabled">The provider %s is now enabled</string>
     <string name="provider_disabled">The provider %s is now disabled</string>

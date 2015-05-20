@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.studentka.mapsproject.MapsActivity">
+    tools:context="ch.unige.idsi.y15.parkfind_android.MapsActivity">
 
 
     <item android:id="@+id/action_settings"

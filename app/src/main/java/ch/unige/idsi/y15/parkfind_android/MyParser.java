@@ -1,4 +1,4 @@
-package com.example.studentka.mapsproject;
+package ch.unige.idsi.y15.parkfind_android;
 
 import android.util.Log;
 
