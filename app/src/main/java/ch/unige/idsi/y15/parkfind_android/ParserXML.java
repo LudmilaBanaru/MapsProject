@@ -1,7 +1,5 @@
 package ch.unige.idsi.y15.parkfind_android;
 
-import android.util.Log;
-
 import org.apache.http.client.ClientProtocolException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,8 +34,6 @@ public class ParserXML {
      * */
     public InputStream getXmlFromUrl(String url) {
         String xml = null;
-        Log.d("mytag", "getXmlFromUrl start...");
-        Log.d("mytag", url);
         InputStream str = null;
 
         try {

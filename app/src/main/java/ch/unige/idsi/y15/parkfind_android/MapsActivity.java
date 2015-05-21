@@ -145,7 +145,8 @@ public class MapsActivity extends ActionBarActivity implements LocationListener,
         @Override
         protected Void doInBackground(Void... param) {
             ParserXML file = new ParserXML();
-            InputStream in = file.getXmlFromUrl("http://parkfind.cfapps.io/GetCoordinate?lat=" + String.valueOf(myLat) + "&long=" + String.valueOf(myLong) + "&type="+type);
+            InputStream in = file.getXmlFromUrl("http://parkfind.cfapps.io/GetCoordinate?lat="
+                    + String.valueOf(myLat) + "&long=" + String.valueOf(myLong) + "&type="+type);
             String str = file.convertStreamToString(in);
             Document doc = file.getDomElement(str);
             String valueLat = file.getValue(doc.getDocumentElement(), "latitude");
